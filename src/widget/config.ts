@@ -14,6 +14,12 @@ export interface WidgetConfig {
   serverUrl: string;
   reporterName?: string;
   reporterEmail?: string;
+  /**
+   * Do not render the widget when its configuration cannot be loaded (server
+   * down, unreachable, or answering with an error). Off by default: the widget
+   * then starts with built-in defaults so reports can still be queued offline.
+   */
+  hideWhenUnavailable?: boolean;
   language?: WidgetLanguageConfig;
   position: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
   buttonText: LauncherTextBundle;

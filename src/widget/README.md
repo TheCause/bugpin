@@ -49,11 +49,12 @@ The widget automatically fetches its configuration from the BugPin server based 
 
 ### Optional Options
 
-| Option          | Type     | Description                                                                                                                     |
-| --------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `language`      | `string` | BCP 47 language code (e.g. `en`, `de`, `fr`, `nl`, `es`, `it`, `ja`, `zh`). Overrides auto-detection and the project's default. |
-| `reporterName`  | `string` | Prefills the editable reporter name field.                                                                                      |
-| `reporterEmail` | `string` | Prefills the editable reporter email field.                                                                                     |
+| Option                | Type      | Description                                                                                                                                             |
+| --------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `language`            | `string`  | BCP 47 language code (e.g. `en`, `de`, `fr`, `nl`, `es`, `it`, `ja`, `zh`). Overrides auto-detection and the project's default.                         |
+| `reporterName`        | `string`  | Prefills the editable reporter name field.                                                                                                              |
+| `reporterEmail`       | `string`  | Prefills the editable reporter email field.                                                                                                             |
+| `hideWhenUnavailable` | `boolean` | Do not show the widget when its configuration cannot be loaded (server down or unreachable). Script tag: `data-hide-when-unavailable`. Default `false`. |
 
 ### Prefill Reporter Details
 

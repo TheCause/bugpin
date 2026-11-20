@@ -31,7 +31,8 @@ let isInitialized = false;
 async function fetchConfig(
   apiKey: string,
   serverUrl: string,
-  integration?: 'npm'
+  integration?: 'npm',
+  hideWhenUnavailable = false
 ): Promise<Partial<WidgetConfig> | null> {
   try {
     const response = await fetch(buildWidgetConfigUrl(apiKey, serverUrl, integration));
@@ -112,7 +113,13 @@ async function fetchConfig(
       }
     }
   } catch (error) {
-    console.warn('[BugPin] Failed to fetch widget config, using defaults', error);
+    if (!hideWhenUnavailable) {
+      console.warn('[BugPin] Failed to fetch widget config, using defaults', error);
+    }
+  }
+  if (hideWhenUnavailable) {
+    console.info('[BugPin] Widget disabled - configuration unavailable');
+    return null;
   }
   return {
     enableConsoleCapture: false,
@@ -209,10 +216,15 @@ async function initFromScriptTag(scriptElement: HTMLScriptElement): Promise<void
   const serverUrl =
     scriptElement.getAttribute('data-server-url') || new URL(scriptElement.src).origin;
 
-  // Fetch configuration from API
-  const fetchedConfig = await fetchConfig(apiKey, serverUrl);
+  // Opt-in: data-hide-when-unavailable (or ="true") keeps the widget hidden when
+  // the server cannot provide its configuration.
+  const hideAttribute = scriptElement.getAttribute('data-hide-when-unavailable');
+  const hideWhenUnavailable = hideAttribute !== null && hideAttribute !== 'false';
 
-  // If null, project is paused - skip widget initialization
+  // Fetch configuration from API
+  const fetchedConfig = await fetchConfig(apiKey, serverUrl, undefined, hideWhenUnavailable);
+
+  // If null, the project is paused or the configuration is unavailable - skip widget initialization
   if (fetchedConfig === null) {
     return;
   }
@@ -277,9 +289,14 @@ const BugPin = {
     }
   ): Promise<void> => {
     const serverUrl = config.serverUrl || defaultConfig.serverUrl;
-    const fetchedConfig = await fetchConfig(config.apiKey, serverUrl, 'npm');
+    const fetchedConfig = await fetchConfig(
+      config.apiKey,
+      serverUrl,
+      'npm',
+      config.hideWhenUnavailable === true
+    );
 
-    // If null, project is paused - skip widget initialization
+    // If null, the project is paused or the configuration is unavailable - skip widget initialization
     if (fetchedConfig === null) {
       return;
     }
